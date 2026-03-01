@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { currentUser } from "@/data/mockUsers";
+import { useAuth } from "@/context/AuthContext";
 import { Shield, Bell, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const SettingsPage = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState({
     email: true,
     slaAlerts: true,
@@ -28,19 +29,21 @@ const SettingsPage = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>Full Name</Label>
-            <Input defaultValue={currentUser.name} />
+            <Input defaultValue={user?.name || ""} />
           </div>
           <div className="space-y-2">
             <Label>Email</Label>
-            <Input defaultValue={currentUser.email} />
+            <Input defaultValue={user?.email || ""} />
           </div>
+          {user?.department && (
+            <div className="space-y-2">
+              <Label>Department</Label>
+              <Input defaultValue={user.department} disabled className="bg-muted text-muted-foreground" />
+            </div>
+          )}
           <div className="space-y-2">
-            <Label>Department</Label>
-            <Input defaultValue={currentUser.department} disabled />
-          </div>
-          <div className="space-y-2">
-            <Label>Employee ID</Label>
-            <Input defaultValue={currentUser.id} disabled />
+            <Label>{user?.role === "patient" ? "Patient ID" : "Employee ID"}</Label>
+            <Input defaultValue={user?.id || ""} disabled className="bg-muted text-muted-foreground" />
           </div>
         </div>
         <Button className="mt-4" size="sm" onClick={() => toast({ title: "Settings Saved", description: "Your profile settings have been updated" })}>Save Changes</Button>
@@ -54,11 +57,15 @@ const SettingsPage = () => {
         </div>
         <div className="flex items-center justify-between rounded-lg bg-muted p-4">
           <div>
-            <p className="text-sm font-medium text-foreground capitalize">{currentUser.role}</p>
-            <p className="text-xs text-muted-foreground">Full system access with administrative privileges</p>
+            <p className="text-sm font-medium text-foreground capitalize">{user?.role?.replace("_", " ")}</p>
+            <p className="text-xs text-muted-foreground">
+              {user?.role === "admin" && "Full system access with administrative privileges"}
+              {user?.role === "department_staff" && `Department access for ${user.department}`}
+              {user?.role === "patient" && "Patient portal access — submit and track your medical requests"}
+            </p>
           </div>
           <div className="flex h-8 items-center rounded-full bg-primary/10 px-3 text-xs font-medium text-primary capitalize">
-            {currentUser.role}
+            {user?.role?.replace("_", " ")}
           </div>
         </div>
       </div>

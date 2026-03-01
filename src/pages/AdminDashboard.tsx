@@ -4,12 +4,14 @@ import KPICard from "@/components/dashboard/KPICard";
 import { mockKPIs, mockChartData, mockActivities } from "@/data/mockDashboard";
 import { StatusChip } from "@/components/requests/StatusChip";
 import { useRequests } from "@/context/RequestContext";
+import { useFilter } from "@/context/FilterContext";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell,
 } from "recharts";
 import { FileText, CheckCircle, AlertTriangle, Clock, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const COLORS = ["hsl(123, 46%, 34%)", "hsl(210, 79%, 46%)", "hsl(27, 96%, 47%)", "hsl(0, 63%, 51%)", "hsl(0, 63%, 41%)"];
 
@@ -24,9 +26,34 @@ const activityIcons: Record<string, React.ElementType> = {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { allRequests } = useRequests();
+  const { selectedDepartment } = useFilter();
+
+  // Filter requests by selected department (affects recent requests table + KPI counts)
+  const filteredRequests = selectedDepartment === "all"
+    ? allRequests
+    : allRequests.filter(
+        (req) => req.toDepartment === selectedDepartment || req.fromDepartment === selectedDepartment
+      );
+
+  // Dynamic KPI counts based on filter
+  const kpiData = {
+    total: filteredRequests.length,
+    pending: filteredRequests.filter((r) => r.status === "pending").length,
+    inProgress: filteredRequests.filter((r) => r.status === "in-progress").length,
+    overdue: filteredRequests.filter((r) => r.status === "overdue" || r.slaMinutesRemaining < 0).length,
+    completed: filteredRequests.filter((r) => r.status === "completed").length,
+  };
 
   return (
     <div className="space-y-6">
+      {/* Department filter banner */}
+      {selectedDepartment !== "all" && (
+        <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2 text-sm text-primary">
+          <FileText className="h-4 w-4" />
+          Showing data for <Badge variant="secondary" className="ml-1">{selectedDepartment}</Badge>
+          <span className="ml-1 text-muted-foreground">— {filteredRequests.length} requests found</span>
+        </div>
+      )}
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {mockKPIs.map((kpi) => (
@@ -136,7 +163,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {allRequests.slice(0, 6).map((req) => (
+                {filteredRequests.slice(0, 6).map((req) => (
                   <tr key={req.id} className="border-b border-border last:border-0">
                     <td className="py-2.5 text-xs font-mono text-muted-foreground">{req.id}</td>
                     <td className="py-2.5 text-xs font-medium text-foreground">{req.title}</td>

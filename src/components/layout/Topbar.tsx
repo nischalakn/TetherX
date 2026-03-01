@@ -15,6 +15,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
+import { useFilter } from "@/context/FilterContext";
 import { mockDepartments } from "@/data/mockDepartments";
 import { useToast } from "@/hooks/use-toast";
 
@@ -47,9 +48,9 @@ export const Topbar = ({ onMenuToggle }: TopbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { selectedDepartment, setSelectedDepartment } = useFilter();
   const { toast } = useToast();
-  const title = pageTitles[location.pathname] || "TetherX";
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const title = pageTitles[location.pathname] || "SevaSetu";
   const [notifications, setNotifications] = useState(mockNotifications);
 
   const unreadCount = notifications.filter((n) => !n.read).length;

@@ -73,13 +73,12 @@ const CreateRequestPage = () => {
             <Input placeholder="PAT-XXXX" value={formData.patientId} onChange={e => setFormData({ ...formData, patientId: e.target.value })} required />
           </div>
           <div className="space-y-2">
-            <Label>From Department *</Label>
-            <Select value={formData.fromDepartment} onValueChange={v => setFormData({ ...formData, fromDepartment: v })}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-              <SelectContent>
-                {mockDepartments.map(d => <SelectItem key={d.id} value={d.name}>{d.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <Label>From Department</Label>
+            <Input
+              value={user?.department || user?.name || "Admin"}
+              disabled
+              className="bg-muted text-muted-foreground cursor-not-allowed"
+            />
           </div>
           <div className="space-y-2">
             <Label>To Department *</Label>

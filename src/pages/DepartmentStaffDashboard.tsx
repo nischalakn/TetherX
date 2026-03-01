@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, CheckCircle2, AlertTriangle, FileText, Plus, ArrowUpRight } from "lucide-react";
+import { Clock, CheckCircle2, AlertTriangle, FileText, Plus, ArrowUpRight, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
-import { RequestItem, RequestStatus } from "@/data/mockRequests";
-import { useRequests } from "@/context/RequestContext";
+import { RequestItem } from "@/data/mockRequests";
+import { useRequests, computeAutoStatus, workflowStepLabel } from "@/context/RequestContext";
 import { StatusChip } from "@/components/requests/StatusChip";
 import SLACountdown from "@/components/requests/SLACountdown";
 import PatientHistoryModal from "@/components/requests/PatientHistoryModal";
@@ -18,9 +17,8 @@ const DepartmentStaffDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { allRequests } = useRequests();
+  const { allRequests, progressRequest } = useRequests();
   const [selectedPatient, setSelectedPatient] = useState<{ id: string; userId?: string } | null>(null);
-  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   // Requests INCOMING to this department (to be handled)
   const departmentRequests = allRequests.filter(
@@ -55,20 +53,17 @@ const DepartmentStaffDashboard = () => {
     }
   };
 
-  const handleStatusChange = (requestId: string, newStatus: RequestStatus) => {
-    // In a real app, this would call an API to update the backend
-    setUpdatingStatus(requestId);
-    
-    // Simulate API call
-    setTimeout(() => {
-      // Here you would update the actual data
-      // For now, we just show a success message
-      toast({
-        title: "Status Updated",
-        description: `Request ${requestId} status changed to ${newStatus}`,
-      });
-      setUpdatingStatus(null);
-    }, 500);
+  const handleProgress = (req: RequestItem) => {
+    const autoStatus = computeAutoStatus(req);
+    if (autoStatus === "completed" || autoStatus === "approved" || autoStatus === "rejected") {
+      toast({ title: "Already Completed", description: `Request ${req.id} is already ${autoStatus}.` });
+      return;
+    }
+    progressRequest(req.id);
+    const step = (req.workflowStep ?? 1) + 1;
+    const total = req.totalSteps ?? 4;
+    const label = workflowStepLabel(step, total);
+    toast({ title: "Workflow Advanced", description: `Request ${req.id} moved to step ${step}/${total} — ${label}.` });
   };
 
   const handlePatientClick = (patientId: string, patientUserId?: string) => {
@@ -200,25 +195,12 @@ const DepartmentStaffDashboard = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Select
-                          value={request.status}
-                          onValueChange={(value) => handleStatusChange(request.id, value as RequestStatus)}
-                          disabled={updatingStatus === request.id}
-                        >
-                          <SelectTrigger className="w-[140px]">
-                            <SelectValue>
-                              <StatusChip status={request.status} />
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="in-progress">In Progress</SelectItem>
-                            <SelectItem value="approved">Approved</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                            <SelectItem value="rejected">Rejected</SelectItem>
-                            <SelectItem value="escalated">Escalated</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="flex flex-col gap-1.5">
+                          <StatusChip status={computeAutoStatus(request)} />
+                          <div className="text-xs text-muted-foreground">
+                            Step {request.workflowStep ?? 1}/{request.totalSteps ?? 4}
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <SLACountdown minutesRemaining={request.slaMinutesRemaining} />
@@ -237,6 +219,19 @@ const DepartmentStaffDashboard = () => {
                             onClick={() => navigate(`/requests/${request.id}`)}
                           >
                             View Details
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleProgress(request)}
+                            disabled={
+                              computeAutoStatus(request) === "completed" ||
+                              computeAutoStatus(request) === "approved" ||
+                              computeAutoStatus(request) === "rejected"
+                            }
+                          >
+                            <ChevronRight className="h-3.5 w-3.5 mr-1" />
+                            Progress
                           </Button>
                         </div>
                       </TableCell>

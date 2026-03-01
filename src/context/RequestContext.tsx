@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-import { RequestItem, mockRequests } from "@/data/mockRequests";
+import { RequestItem, RequestStatus, mockRequests } from "@/data/mockRequests";
 
-const STORAGE_KEY = "tetherx_dynamic_requests";
+const STORAGE_KEY = "sevasetu_dynamic_requests";
 
 const loadFromStorage = (): RequestItem[] => {
   try {
@@ -12,9 +12,34 @@ const loadFromStorage = (): RequestItem[] => {
   }
 };
 
+// Auto-compute status based on workflow progress & SLA — no manual override
+export const computeAutoStatus = (req: RequestItem): RequestStatus => {
+  // Preserve terminal/manually-decided statuses
+  if (req.status === "rejected" || req.status === "escalated" || req.status === "approved") {
+    return req.status;
+  }
+  if (req.slaMinutesRemaining !== undefined && req.slaMinutesRemaining <= 0) return "overdue";
+  const total = req.totalSteps ?? 4;
+  const step = req.workflowStep ?? 1;
+  if (step >= total) return "completed";
+  if (step > 1) return "in-progress";
+  return "pending";
+};
+
+// Step labels for dept staff "Progress" button
+export const workflowStepLabel = (step: number, total: number): string => {
+  const pct = Math.round((step / total) * 100);
+  if (pct >= 100) return "Completed";
+  if (pct >= 75) return "Final Review";
+  if (pct >= 50) return "Processing";
+  if (pct >= 25) return "In Progress";
+  return "Received";
+};
+
 interface RequestContextType {
   allRequests: RequestItem[];
   addRequest: (req: RequestItem) => void;
+  progressRequest: (id: string) => void;
 }
 
 const RequestContext = createContext<RequestContextType | undefined>(undefined);
@@ -30,8 +55,23 @@ export function RequestProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const progressRequest = (id: string) => {
+    setDynamic((prev) => {
+      const updated = prev.map((req) => {
+        if (req.id !== id) return req;
+        const total = req.totalSteps ?? 4;
+        const nextStep = Math.min((req.workflowStep ?? 1) + 1, total);
+        const updated = { ...req, workflowStep: nextStep };
+        updated.status = computeAutoStatus(updated);
+        return updated;
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   return (
-    <RequestContext.Provider value={{ allRequests: [...dynamic, ...mockRequests], addRequest }}>
+    <RequestContext.Provider value={{ allRequests: [...dynamic, ...mockRequests], addRequest, progressRequest }}>
       {children}
     </RequestContext.Provider>
   );

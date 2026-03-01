@@ -103,7 +103,7 @@ export const Sidebar = ({ open, onToggle }: SidebarProps) => {
           </div>
           {open && (
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-foreground tracking-tight">MediFlow</span>
+              <span className="text-sm font-bold text-foreground tracking-tight">SevaSetu</span>
               <span className="text-[10px] text-muted-foreground">Workflow Automation</span>
             </div>
           )}

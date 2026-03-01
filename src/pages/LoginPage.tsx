@@ -11,7 +11,7 @@ import { mockUsers } from "@/data/mockUsers";
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState("sarah.chen@mediflow.com");
+  const [email, setEmail] = useState("sarah.chen@sevasetu.com");
   const [password, setPassword] = useState("admin123");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -75,7 +75,7 @@ const LoginPage = () => {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary">
             <Activity className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">MediFlow</h1>
+          <h1 className="text-2xl font-bold text-foreground">SevaSetu</h1>
           <p className="mt-1 text-sm text-muted-foreground">Inter-Department Workflow Automation</p>
         </div>
 
@@ -132,8 +132,8 @@ const LoginPage = () => {
         <div className="mt-6 space-y-2 text-center text-xs text-muted-foreground">
           <p className="font-medium">Demo Credentials:</p>
           <div className="space-y-1">
-            <p>Admin: sarah.chen@mediflow.com / admin123</p>
-            <p>Dept Staff: james.wilson@mediflow.com / staff123</p>
+            <p>Admin: sarah.chen@sevasetu.com / admin123</p>
+            <p>Dept Staff: james.wilson@sevasetu.com / staff123</p>
             <p>Patient: john.anderson@email.com / patient123</p>
           </div>
         </div>

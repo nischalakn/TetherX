@@ -14,18 +14,18 @@ export interface User {
 
 export const mockUsers: User[] = [
   // Admin
-  { id: "USR-001", name: "Dr. Sarah Chen", email: "sarah.chen@mediflow.com", role: "admin", department: "Administration", avatar: "SC", status: "active" },
+  { id: "USR-001", name: "Dr. Sarah Chen", email: "sarah.chen@sevasetu.com", role: "admin", department: "Administration", avatar: "SC", status: "active" },
   
   // Department Staff
-  { id: "USR-002", name: "Dr. James Wilson", email: "james.wilson@mediflow.com", role: "department_staff", department: "Radiology", avatar: "JW", status: "active" },
-  { id: "USR-003", name: "Dr. Emily Rodriguez", email: "emily.rodriguez@mediflow.com", role: "department_staff", department: "Cardiology", avatar: "ER", status: "active" },
-  { id: "USR-004", name: "Michael Park", email: "michael.park@mediflow.com", role: "department_staff", department: "Emergency", avatar: "MP", status: "active" },
-  { id: "USR-005", name: "Lisa Thompson", email: "lisa.thompson@mediflow.com", role: "department_staff", department: "Pathology", avatar: "LT", status: "active" },
-  { id: "USR-006", name: "David Kim", email: "david.kim@mediflow.com", role: "department_staff", department: "Neurology", avatar: "DK", status: "active" },
+  { id: "USR-002", name: "Dr. James Wilson", email: "james.wilson@sevasetu.com", role: "department_staff", department: "Radiology", avatar: "JW", status: "active" },
+  { id: "USR-003", name: "Dr. Emily Rodriguez", email: "emily.rodriguez@sevasetu.com", role: "department_staff", department: "Cardiology", avatar: "ER", status: "active" },
+  { id: "USR-004", name: "Michael Park", email: "michael.park@sevasetu.com", role: "department_staff", department: "Emergency", avatar: "MP", status: "active" },
+  { id: "USR-005", name: "Lisa Thompson", email: "lisa.thompson@sevasetu.com", role: "department_staff", department: "Pathology", avatar: "LT", status: "active" },
+  { id: "USR-006", name: "David Kim", email: "david.kim@sevasetu.com", role: "department_staff", department: "Neurology", avatar: "DK", status: "active" },
   
   // Legacy roles (kept for compatibility)
-  { id: "USR-007", name: "Anna Martinez", email: "anna.martinez@mediflow.com", role: "supervisor", department: "Orthopedics", avatar: "AM", status: "active" },
-  { id: "USR-008", name: "Robert Lee", email: "robert.lee@mediflow.com", role: "staff", department: "Pharmacy", avatar: "RL", status: "active" },
+  { id: "USR-007", name: "Anna Martinez", email: "anna.martinez@sevasetu.com", role: "supervisor", department: "Orthopedics", avatar: "AM", status: "active" },
+  { id: "USR-008", name: "Robert Lee", email: "robert.lee@sevasetu.com", role: "staff", department: "Pharmacy", avatar: "RL", status: "active" },
   
   // Patients
   { id: "PAT-001", name: "John Anderson", email: "john.anderson@email.com", role: "patient", department: "N/A", avatar: "JA", status: "active", dateOfBirth: "1985-03-15", phoneNumber: "+1-555-0101", address: "123 Oak Street, Boston, MA 02108" },

@@ -108,7 +108,7 @@ const PublicRequestPage = () => {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Activity className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-foreground">TetherX</span>
+            <span className="font-bold text-foreground">SevaSetu</span>
           </div>
           <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
             <ArrowLeft className="mr-1.5 h-4 w-4" />Back

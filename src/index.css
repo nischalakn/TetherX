@@ -70,7 +70,7 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(145deg, hsl(210 80% 98%) 0%, hsl(0 0% 100%) 45%, hsl(220 60% 97%) 100%);
+    background: linear-gradient(115deg, #e6f8ff, #eff0fa);
     background-attachment: fixed;
   }
 }
@@ -88,7 +88,7 @@
 
   /* Global page gradient — applied to body so every page has consistent soft background */
   .page-gradient {
-    background: linear-gradient(145deg, hsl(210 80% 98%) 0%, hsl(0 0% 100%) 45%, hsl(220 60% 97%) 100%);
+    background: linear-gradient(115deg, #e6f8ff, #eff0fa);
     min-height: 100vh;
   }
 }

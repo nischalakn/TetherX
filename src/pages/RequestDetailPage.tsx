@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { mockRequests } from "@/data/mockRequests";
+import { useRequests } from "@/context/RequestContext";
 import { StatusChip, PriorityChip } from "@/components/requests/StatusChip";
 import SLACountdown from "@/components/requests/SLACountdown";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,15 @@ import {
   Upload, RefreshCw
 } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const RequestDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { allRequests } = useRequests();
+  const { toast } = useToast();
   const [newComment, setNewComment] = useState("");
-  const request = mockRequests.find((r) => r.id === id);
+  const request = allRequests.find((r) => r.id === id);
 
   if (!request) {
     return (
@@ -50,8 +53,8 @@ const RequestDetailPage = () => {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm"><RefreshCw className="mr-1.5 h-3.5 w-3.5" />Reassign</Button>
-          <Button size="sm"><CheckCircle className="mr-1.5 h-3.5 w-3.5" />Approve</Button>
+          <Button variant="outline" size="sm" onClick={() => toast({ title: "Reassignment Requested", description: "Request has been queued for reassignment" })}><RefreshCw className="mr-1.5 h-3.5 w-3.5" />Reassign</Button>
+          <Button size="sm" onClick={() => toast({ title: "Request Approved", description: `${request.id} has been approved successfully` })}><CheckCircle className="mr-1.5 h-3.5 w-3.5" />Approve</Button>
         </div>
       </div>
 
@@ -143,7 +146,7 @@ const RequestDetailPage = () => {
                 onChange={(e) => setNewComment(e.target.value)}
                 className="min-h-[60px] text-sm"
               />
-              <Button size="icon" className="shrink-0 self-end">
+              <Button size="icon" className="shrink-0 self-end" onClick={() => { if (newComment.trim()) { toast({ title: "Comment Added", description: "Your comment has been posted" }); setNewComment(""); } }}>
                 <Send className="h-4 w-4" />
               </Button>
             </div>
@@ -190,7 +193,7 @@ const RequestDetailPage = () => {
             ) : (
               <p className="text-xs text-muted-foreground">No attachments</p>
             )}
-            <Button variant="outline" size="sm" className="mt-3 w-full">
+            <Button variant="outline" size="sm" className="mt-3 w-full" onClick={() => toast({ title: "File Upload", description: "File upload feature opens in full version" })}>
               <Upload className="mr-1.5 h-3.5 w-3.5" /> Upload File
             </Button>
           </div>

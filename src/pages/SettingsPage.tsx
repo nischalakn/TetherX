@@ -6,8 +6,10 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { currentUser } from "@/data/mockUsers";
 import { Shield, Bell, Lock, User } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const SettingsPage = () => {
+  const { toast } = useToast();
   const [notifications, setNotifications] = useState({
     email: true,
     slaAlerts: true,
@@ -41,7 +43,7 @@ const SettingsPage = () => {
             <Input defaultValue={currentUser.id} disabled />
           </div>
         </div>
-        <Button className="mt-4" size="sm">Save Changes</Button>
+        <Button className="mt-4" size="sm" onClick={() => toast({ title: "Settings Saved", description: "Your profile settings have been updated" })}>Save Changes</Button>
       </div>
 
       {/* Role Info */}
@@ -107,7 +109,7 @@ const SettingsPage = () => {
             <Label>Confirm New Password</Label>
             <Input type="password" placeholder="••••••••" />
           </div>
-          <Button size="sm">Update Password</Button>
+          <Button size="sm" onClick={() => toast({ title: "Password Updated", description: "Your password has been changed successfully" })}>Update Password</Button>
         </div>
       </div>
     </div>

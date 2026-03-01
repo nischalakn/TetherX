@@ -1,7 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, PlusCircle, GitBranch, BarChart3,
-  Settings, Building2, ChevronLeft, Activity, FolderHeart, History
+  Settings, Building2, ChevronLeft, Activity, FolderHeart, History,
+  ListChecks, ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -35,14 +36,15 @@ export const Sidebar = ({ open, onToggle }: SidebarProps) => {
           { label: "My Dashboard", icon: LayoutDashboard, path: "/department-staff" },
           { label: "Assigned Requests", icon: FileText, path: "/requests" },
           { label: "Create Request", icon: PlusCircle, path: "/create-request" },
+          { label: "Track Requests", icon: ArrowUpRight, path: "/department-staff/track" },
           { label: "Settings", icon: Settings, path: "/settings" },
         ];
       
       case "patient":
         return [
           { label: "My Portal", icon: FolderHeart, path: "/patient" },
-          { label: "Submit Request", icon: PlusCircle, path: "/patient#submit" },
-          { label: "My History", icon: History, path: "/patient#history" },
+          { label: "My Requests", icon: ListChecks, path: "/patient/requests" },
+          { label: "My History", icon: History, path: "/patient/history" },
           { label: "Settings", icon: Settings, path: "/settings" },
         ];
       

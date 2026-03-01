@@ -3,9 +3,11 @@ import { mockWorkflows } from "@/data/mockWorkflows";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, GripVertical, Trash2, GitBranch, Clock, User, Building2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const WorkflowPage = () => {
   const [selectedWorkflow, setSelectedWorkflow] = useState(mockWorkflows[0]);
+  const { toast } = useToast();
 
   return (
     <div className="space-y-6">
@@ -14,7 +16,7 @@ const WorkflowPage = () => {
           <h2 className="text-lg font-semibold text-foreground">Workflow Builder</h2>
           <p className="text-sm text-muted-foreground">Design and manage workflow templates</p>
         </div>
-        <Button><Plus className="mr-1.5 h-4 w-4" />New Workflow</Button>
+        <Button onClick={() => toast({ title: "New Workflow", description: "Workflow creation opens in full version" })}><Plus className="mr-1.5 h-4 w-4" />New Workflow</Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -77,14 +79,14 @@ const WorkflowPage = () => {
                       </div>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="shrink-0">
+                  <Button variant="ghost" size="icon" className="shrink-0" onClick={() => toast({ title: "Step Removed", description: "Workflow step removed" })}>
                     <Trash2 className="h-4 w-4 text-muted-foreground" />
                   </Button>
                 </div>
               ))}
             </div>
 
-            <Button variant="outline" className="mt-4">
+            <Button variant="outline" className="mt-4" onClick={() => toast({ title: "Add Step", description: "Step builder opens in full version" })}>
               <Plus className="mr-1.5 h-4 w-4" />Add Step
             </Button>
           </div>

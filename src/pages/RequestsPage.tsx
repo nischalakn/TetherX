@@ -1,20 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockRequests } from "@/data/mockRequests";
+import { useRequests } from "@/context/RequestContext";
+import { useAuth } from "@/context/AuthContext";
 import { StatusChip, PriorityChip } from "@/components/requests/StatusChip";
 import SLACountdown from "@/components/requests/SLACountdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Eye, ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const RequestsPage = () => {
   const navigate = useNavigate();
+  const { allRequests } = useRequests();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
 
-  const filtered = mockRequests.filter(req => {
+  // Department staff only see requests assigned to their department
+  const baseRequests = user?.role === "department_staff"
+    ? allRequests.filter((req) => req.toDepartment === user.department)
+    : allRequests;
+
+  const filtered = baseRequests.filter(req => {
     const matchSearch = req.title.toLowerCase().includes(search.toLowerCase()) ||
       req.patientName.toLowerCase().includes(search.toLowerCase()) ||
       req.id.toLowerCase().includes(search.toLowerCase());
@@ -103,7 +113,7 @@ const RequestsPage = () => {
         </div>
         {/* Pagination */}
         <div className="flex items-center justify-between border-t border-border px-4 py-3">
-          <p className="text-xs text-muted-foreground">Showing {filtered.length} of {mockRequests.length} requests</p>
+          <p className="text-xs text-muted-foreground">Showing {filtered.length} of {baseRequests.length} requests</p>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" disabled><ChevronLeft className="h-4 w-4" /></Button>
             <span className="text-xs text-muted-foreground">Page 1 of 1</span>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import KPICard from "@/components/dashboard/KPICard";
 import { mockKPIs, mockChartData, mockActivities } from "@/data/mockDashboard";
 import { StatusChip } from "@/components/requests/StatusChip";
-import { mockRequests } from "@/data/mockRequests";
+import { useRequests } from "@/context/RequestContext";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell,
@@ -23,6 +23,7 @@ const activityIcons: Record<string, React.ElementType> = {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { allRequests } = useRequests();
 
   return (
     <div className="space-y-6">
@@ -135,7 +136,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {mockRequests.slice(0, 6).map((req) => (
+                {allRequests.slice(0, 6).map((req) => (
                   <tr key={req.id} className="border-b border-border last:border-0">
                     <td className="py-2.5 text-xs font-mono text-muted-foreground">{req.id}</td>
                     <td className="py-2.5 text-xs font-medium text-foreground">{req.title}</td>

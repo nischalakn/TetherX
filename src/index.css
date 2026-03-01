@@ -70,6 +70,8 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
+    background: linear-gradient(145deg, hsl(210 80% 98%) 0%, hsl(0 0% 100%) 45%, hsl(220 60% 97%) 100%);
+    background-attachment: fixed;
   }
 }
 
@@ -83,4 +85,34 @@
   .shadow-enterprise {
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px 0 rgb(0 0 0 / 0.04);
   }
+
+  /* Global page gradient — applied to body so every page has consistent soft background */
+  .page-gradient {
+    background: linear-gradient(145deg, hsl(210 80% 98%) 0%, hsl(0 0% 100%) 45%, hsl(220 60% 97%) 100%);
+    min-height: 100vh;
+  }
 }
+
+/* Voice waveform animation */
+@keyframes waveBar {
+  0%, 100% { transform: scaleY(0.3); }
+  50%       { transform: scaleY(1); }
+}
+.wave-bar {
+  display: inline-block;
+  width: 3px;
+  border-radius: 99px;
+  background: currentColor;
+  animation: waveBar 0.9s ease-in-out infinite;
+  transform-origin: bottom;
+}
+.wave-bar:nth-child(1)  { animation-delay: 0.00s; height: 20px; }
+.wave-bar:nth-child(2)  { animation-delay: 0.10s; height: 28px; }
+.wave-bar:nth-child(3)  { animation-delay: 0.20s; height: 16px; }
+.wave-bar:nth-child(4)  { animation-delay: 0.05s; height: 24px; }
+.wave-bar:nth-child(5)  { animation-delay: 0.15s; height: 32px; }
+.wave-bar:nth-child(6)  { animation-delay: 0.25s; height: 18px; }
+.wave-bar:nth-child(7)  { animation-delay: 0.08s; height: 26px; }
+.wave-bar:nth-child(8)  { animation-delay: 0.18s; height: 14px; }
+.wave-bar:nth-child(9)  { animation-delay: 0.12s; height: 22px; }
+.wave-bar:nth-child(10) { animation-delay: 0.22s; height: 30px; }

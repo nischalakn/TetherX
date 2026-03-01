@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, CheckCircle2, AlertTriangle, FileText, Plus } from "lucide-react";
+import { Clock, CheckCircle2, AlertTriangle, FileText, Plus, ArrowUpRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
-import { mockRequests, RequestItem, RequestStatus } from "@/data/mockRequests";
+import { RequestItem, RequestStatus } from "@/data/mockRequests";
+import { useRequests } from "@/context/RequestContext";
 import { StatusChip } from "@/components/requests/StatusChip";
 import SLACountdown from "@/components/requests/SLACountdown";
 import PatientHistoryModal from "@/components/requests/PatientHistoryModal";
@@ -17,12 +18,18 @@ const DepartmentStaffDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { allRequests } = useRequests();
   const [selectedPatient, setSelectedPatient] = useState<{ id: string; userId?: string } | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
-  // Filter requests for the staff's department
-  const departmentRequests = mockRequests.filter(
-    (req) => req.toDepartment === user?.department || req.fromDepartment === user?.department
+  // Requests INCOMING to this department (to be handled)
+  const departmentRequests = allRequests.filter(
+    (req) => req.toDepartment === user?.department
+  );
+
+  // Requests sent FROM this department to other departments
+  const outgoingRequests = allRequests.filter(
+    (req) => req.fromDepartment === user?.department && req.toDepartment !== user?.department
   );
 
   // Calculate metrics
@@ -249,6 +256,62 @@ const DepartmentStaffDashboard = () => {
         isOpen={!!selectedPatient}
         onClose={() => setSelectedPatient(null)}
       />
+
+      {/* Outgoing Requests Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ArrowUpRight className="h-5 w-5 text-primary" />
+            Requests to Other Departments
+          </CardTitle>
+          <CardDescription>
+            Requests originated from {user?.department} sent to other departments
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {outgoingRequests.length === 0 ? (
+            <div className="py-8 text-center text-muted-foreground text-sm">
+              No outgoing requests from your department
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Request</TableHead>
+                    <TableHead>Patient</TableHead>
+                    <TableHead>Sent To</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {outgoingRequests.map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell>
+                        <div className="font-medium">{request.title}</div>
+                        <div className="text-xs text-muted-foreground">{request.id}</div>
+                      </TableCell>
+                      <TableCell>{request.patientName}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{request.toDepartment}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <StatusChip status={request.status} />
+                      </TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="ghost" onClick={() => navigate(`/requests/${request.id}`)}>
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Floating Add Button */}
       <Button

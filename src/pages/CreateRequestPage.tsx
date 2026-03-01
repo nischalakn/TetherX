@@ -7,9 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { mockDepartments } from "@/data/mockDepartments";
 import { toast } from "sonner";
+import { useRequests } from "@/context/RequestContext";
+import { useAuth } from "@/context/AuthContext";
+import { RequestItem } from "@/data/mockRequests";
 
 const CreateRequestPage = () => {
   const navigate = useNavigate();
+  const { addRequest } = useRequests();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "", description: "", patientName: "", patientId: "",
     fromDepartment: "", toDepartment: "", priority: "", category: "",
@@ -17,7 +22,32 @@ const CreateRequestPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Request created successfully!", { description: "REQ-2024-011 has been submitted for processing." });
+    const newId = `REQ-${Date.now().toString(36).toUpperCase()}`;
+    const newReq: RequestItem = {
+      id: newId,
+      title: formData.title,
+      description: formData.description,
+      patientName: formData.patientName,
+      patientId: formData.patientId,
+      fromDepartment: formData.fromDepartment || user?.department || "Admin",
+      toDepartment: formData.toDepartment,
+      status: "pending",
+      priority: (formData.priority as RequestItem["priority"]) || "medium",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      assignedTo: "Unassigned",
+      slaDeadline: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+      slaMinutesRemaining: 480,
+      workflowStep: 1,
+      totalSteps: 3,
+      comments: [],
+      attachments: [],
+      documents: [],
+      history: [{ id: `H-${Date.now()}`, action: "Request Created", performedBy: user?.name || "Staff", timestamp: new Date().toISOString(), details: "Request created via staff portal", status: "pending" }],
+      category: formData.category || "Consultation",
+    };
+    addRequest(newReq);
+    toast.success("Request created successfully!", { description: `${newId} has been submitted for processing.` });
     navigate("/requests");
   };
 

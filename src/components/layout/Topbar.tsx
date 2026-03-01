@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Bell, Search, LogOut, User, Settings } from "lucide-react";
+import { Menu, Bell, Search, LogOut, User, Settings, CheckCheck } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
 import { mockDepartments } from "@/data/mockDepartments";
+import { useToast } from "@/hooks/use-toast";
+
+const mockNotifications = [
+  { id: 1, text: "REQ-2024-001 status updated to In Progress", time: "2m ago", read: false },
+  { id: 2, text: "REQ-2024-005 has been escalated — immediate attention required", time: "1h ago", read: false },
+  { id: 3, text: "SLA breach: REQ-2024-007 is overdue by 2 hours", time: "2h ago", read: false },
+  { id: 4, text: "REQ-2024-003 approved by Dr. Sarah Chen", time: "3h ago", read: true },
+  { id: 5, text: "New request assigned to your department: ECG Review", time: "4h ago", read: true },
+];
 
 interface TopbarProps {
   onMenuToggle: () => void;
@@ -38,8 +47,17 @@ export const Topbar = ({ onMenuToggle }: TopbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const title = pageTitles[location.pathname] || "MediFlow";
+  const { toast } = useToast();
+  const title = pageTitles[location.pathname] || "TetherX";
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [notifications, setNotifications] = useState(mockNotifications);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const markAllRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    toast({ title: "Notifications cleared", description: "All notifications marked as read" });
+  };
 
   const getUserInitials = () => {
     if (!user) return "??";
@@ -111,10 +129,39 @@ export const Topbar = ({ onMenuToggle }: TopbarProps) => {
           </div>
         )}
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          <Badge className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full p-0 text-[10px] flex items-center justify-center">
-            3
-          </Badge>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                {unreadCount > 0 && (
+                  <Badge className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full p-0 text-[10px] flex items-center justify-center">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <Button variant="ghost" size="sm" className="h-6 text-xs px-2" onClick={markAllRead}>
+                    <CheckCheck className="mr-1 h-3 w-3" />
+                    Mark all read
+                  </Button>
+                )}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {notifications.map((n) => (
+                <DropdownMenuItem key={n.id} className={`flex flex-col items-start gap-0.5 py-3 cursor-pointer ${!n.read ? "bg-primary/5" : ""}`}
+                  onClick={() => setNotifications((prev) => prev.map((x) => x.id === n.id ? { ...x, read: true } : x))}>
+                  <span className={`text-xs leading-snug ${!n.read ? "font-medium text-foreground" : "text-muted-foreground"}`}>
+                    {n.text}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{n.time}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </Button>
         
         {/* User Dropdown Menu */}

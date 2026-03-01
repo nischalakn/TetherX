@@ -6,8 +6,10 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line,
 } from "recharts";
+import { useToast } from "@/hooks/use-toast";
 
 const ReportsPage = () => {
+  const { toast } = useToast();
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -25,8 +27,8 @@ const ReportsPage = () => {
             <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input type="date" className="pl-9 w-40" defaultValue="2024-12-15" />
           </div>
-          <Button variant="outline"><Download className="mr-1.5 h-4 w-4" />Export CSV</Button>
-          <Button><Download className="mr-1.5 h-4 w-4" />Export PDF</Button>
+          <Button variant="outline" onClick={() => toast({ title: "Exporting CSV", description: "Your CSV report is being generated..." })}><Download className="mr-1.5 h-4 w-4" />Export CSV</Button>
+          <Button onClick={() => toast({ title: "Generating PDF", description: "Your PDF report is being compiled..." })}><Download className="mr-1.5 h-4 w-4" />Export PDF</Button>
         </div>
       </div>
 

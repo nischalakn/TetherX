@@ -4,10 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, FileText, Download, User, Phone, Mail, MapPin } from "lucide-react";
-import { mockRequests } from "@/data/mockRequests";
+import { useRequests } from "@/context/RequestContext";
 import { mockUsers } from "@/data/mockUsers";
 import { StatusChip } from "./StatusChip";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface PatientHistoryModalProps {
   patientId: string | null;
@@ -17,13 +18,15 @@ interface PatientHistoryModalProps {
 }
 
 const PatientHistoryModal = ({ patientId, patientUserId, isOpen, onClose }: PatientHistoryModalProps) => {
+  const { allRequests } = useRequests();
+  const { toast } = useToast();
   if (!patientId) return null;
 
   // Find patient user info
   const patientUser = mockUsers.find(u => u.id === patientUserId || u.role === "patient");
   
   // Find all requests for this patient
-  const patientRequests = mockRequests.filter(
+  const patientRequests = allRequests.filter(
     req => req.patientId === patientId || req.patientUserId === patientUserId
   ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -213,7 +216,7 @@ const PatientHistoryModal = ({ patientId, patientUserId, isOpen, onClose }: Pati
                               </div>
                             </div>
                           </div>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="outline" onClick={() => toast({ title: "Downloading File", description: `${doc.filename} download started` })}>
                             <Download className="h-4 w-4 mr-1" />
                             Download
                           </Button>
